@@ -2,7 +2,7 @@
 
 现代风格单页个人作品集，参考 [vcard-personal-portfolio](https://github.com/codewithsadee/vcard-personal-portfolio) 布局，采用 shadcn 设计语言（zinc 色板、卡片、圆角）。零构建依赖，纯 HTML + CSS + JS，可直接部署到 GitHub Pages。
 
-当前内容基于 GitHub 账号 [@answer](https://github.com/answer) 的公开资料填充。
+当前内容基于 GitHub 账号的公开资料填充。
 
 ## 功能特性
 
