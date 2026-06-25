@@ -1,152 +1,102 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="system">
+<html lang="en" data-theme="system">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="DominicDin — 计算机科学&人工智能 · Python 开发者" id="meta-description" />
+  <meta name="description" content="DominicDin — Computer Science & AI · Python Developer" id="meta-description" />
   <title>DominicDin — Personal Portfolio</title>
-  <link rel="stylesheet" href="style.css?v=11" />
+  <link rel="stylesheet" href="style.css?v=22" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <div class="bg-fixed" aria-hidden="true"></div>
-  <div class="bg-gradient" aria-hidden="true"></div>
+  <div id="page-bg" class="page-bg" aria-hidden="true">
+    <div class="bg-fixed" id="bg-fixed"></div>
+    <div class="bg-gradient" id="bg-gradient"></div>
+  </div>
 
   <div class="app">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-inner">
-        <figure class="avatar-wrap">
-          <img
-            class="avatar"
-            id="avatar"
-            src="https://avatars.githubusercontent.com/u/96225447?v=4"
-            alt="DominicDin 头像"
-            width="120"
-            height="120"
-          />
-          <span class="avatar-ring" aria-hidden="true"></span>
-        </figure>
+    <div class="mobile-overlay" id="mobile-overlay" hidden></div>
 
-        <div class="identity">
-          <h1 class="name" id="display-name">DominicDin</h1>
-          <p class="role" id="role">中国海洋大学 · 计算机科学&人工智能</p>
-        </div>
-
-        <button class="contacts-toggle" id="contacts-toggle" type="button" aria-expanded="false" aria-controls="contact-list">
-          <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-          <span data-i18n="contacts_toggle">联系方式</span>
-        </button>
-
-        <ul class="contact-list" id="contact-list">
-          <li>
-            <span class="contact-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
-            </span>
-            <div>
-              <p class="contact-label" data-i18n="label_location">位置</p>
-              <p class="contact-value" id="location">Shanghai</p>
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="header-cluster">
+          <div class="hover-dropdown menu-dropdown" id="menu-dropdown">
+            <button class="menu-btn glass-pill" id="menu-btn" type="button" data-i18n-aria="menu_open" aria-label="打开菜单" aria-expanded="false" aria-haspopup="true" aria-controls="nav-menu-panel">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+            <div class="hover-dropdown-panel" id="nav-menu-panel">
+              <div class="hover-dropdown-glass" data-physical-glass data-glass-preset="dropdown">
+                <nav aria-label="页面导航">
+                  <ul class="hover-dropdown-menu">
+                    <li><a class="nav-link active" href="#about" data-section="about"><span data-i18n="nav_about">关于</span></a></li>
+                    <li><a class="nav-link" href="#skills" data-section="skills"><span data-i18n="nav_skills">技能</span></a></li>
+                    <li><a class="nav-link" href="#projects" data-section="projects"><span data-i18n="nav_projects">项目</span></a></li>
+                    <li><a class="nav-link" href="#contact" data-section="contact"><span data-i18n="nav_contact">联系</span></a></li>
+                  </ul>
+                </nav>
+              </div>
             </div>
-          </li>
-          <li>
-            <span class="contact-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-            </span>
-            <div>
-              <p class="contact-label" data-i18n="label_joined">加入 GitHub</p>
-              <p class="contact-value" id="joined">2021 年 12 月</p>
-            </div>
-          </li>
-          <li>
-            <span class="contact-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-6h-2v6zm0-8h2V7h-2v2z"/></svg>
-            </span>
-            <div>
-              <p class="contact-label" data-i18n="label_repos">公开仓库</p>
-              <p class="contact-value" id="repo-count">5</p>
-            </div>
-          </li>
-        </ul>
-
-        <nav class="social" aria-label="社交链接">
-          <a class="social-link" href="https://github.com/DominicDin" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-            <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A8.205 8.205 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-          </a>
-        </nav>
-      </div>
-    </aside>
-
-    <div class="main-column">
-      <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
-      <header class="topbar">
-        <button class="menu-btn" id="menu-btn" type="button" data-i18n-aria="menu_open" aria-label="打开菜单" aria-expanded="false" aria-controls="sidebar">
-          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-        </button>
-
-        <div class="nav-glass glass-panel glass-panel--track">
-          <nav class="nav" aria-label="页面导航">
-            <a class="nav-link active" href="#about" data-section="about" data-i18n="nav_about">关于</a>
-            <a class="nav-link" href="#skills" data-section="skills" data-i18n="nav_skills">技能</a>
-            <a class="nav-link" href="#projects" data-section="projects" data-i18n="nav_projects">项目</a>
-            <a class="nav-link" href="#contact" data-section="contact" data-i18n="nav_contact">联系</a>
-          </nav>
-        </div>
-
-        <div class="topbar-actions">
-          <div class="lang-switch" role="group" aria-label="Language">
-            <button type="button" class="lang-btn active" data-lang="zh" aria-pressed="true">中文</button>
-            <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
           </div>
 
-        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="切换主题" data-i18n-aria="theme_toggle">
-          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="5"/>
-            <line x1="12" y1="1" x2="12" y2="3"/>
-            <line x1="12" y1="21" x2="12" y2="23"/>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            <line x1="1" y1="12" x2="3" y2="12"/>
-            <line x1="21" y1="12" x2="23" y2="12"/>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-          </svg>
-          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-          </svg>
-        </button>
-        </div>
-      </header>
-
-      <main class="content">
-        <section class="section reveal visible" id="about">
-          <h2 class="section-title">
-            <span class="section-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-            </span>
-            <span data-i18n="section_about">关于我</span>
-          </h2>
-
-          <div class="about-hero glass-panel glass-panel--hero">
-            <div class="about-hero-visual">
-              <figure class="about-avatar-wrap">
-                <img
-                  class="about-avatar"
-                  id="about-avatar"
-                  src="https://avatars.githubusercontent.com/u/96225447?v=4"
-                  alt="DominicDin 头像"
-                  width="140"
-                  height="140"
-                />
-                <span class="about-avatar-ring" aria-hidden="true"></span>
-                <span class="about-avatar-glow" aria-hidden="true"></span>
-              </figure>
+          <div class="header-actions">
+            <div class="hover-dropdown lang-dropdown" id="lang-dropdown">
+              <button type="button" class="lang-trigger glass-pill" id="lang-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="lang-menu-panel" aria-label="Language">
+                <span id="lang-label" data-i18n="lang_label">EN</span>
+              </button>
+              <div class="hover-dropdown-panel hover-dropdown-panel--right" id="lang-menu-panel">
+                <div class="hover-dropdown-glass" data-physical-glass data-glass-preset="dropdown">
+                  <ul class="hover-dropdown-menu" role="group" aria-label="Language">
+                    <li><button type="button" class="lang-btn" data-lang="zh" aria-pressed="false">中文</button></li>
+                    <li><button type="button" class="lang-btn active" data-lang="en" aria-pressed="true">EN</button></li>
+                  </ul>
+                </div>
+              </div>
             </div>
+
+            <button class="theme-toggle glass-pill" id="theme-toggle" type="button" aria-label="切换主题" data-i18n-aria="theme_toggle">
+              <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="5"/>
+                <line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+              </svg>
+              <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="about-page reveal visible" id="about" data-section="about">
+        <div class="about-hero glass-panel glass-panel--hero" data-physical-glass data-glass-preset="hero">
+          <div class="physical-glass__content about-hero-inner">
+            <figure class="about-avatar-wrap">
+              <img
+                class="about-avatar"
+                id="about-avatar"
+                src="https://avatars.githubusercontent.com/u/96225447?v=4"
+                alt="DominicDin 头像"
+                width="140"
+                height="140"
+              />
+              <span class="about-avatar-ring" aria-hidden="true"></span>
+              <span class="about-avatar-glow" aria-hidden="true"></span>
+            </figure>
             <div class="about-hero-text">
               <p class="about-greeting" data-i18n="about_greeting">你好，我是</p>
-              <h3 class="about-name" id="about-name">DominicDin</h3>
+              <h1 class="about-name" id="about-name">DominicDin</h1>
               <p class="about-tagline" id="about-tagline">中国海洋大学 · 计算机科学&人工智能 · Python 开发者</p>
-              <div class="chip-row" id="about-chips" aria-label="位置与兴趣">
+              <div class="chip-row" aria-label="位置与兴趣">
                 <span class="chip chip-location">
                   <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
                   <span id="about-location">Shanghai</span>
@@ -157,12 +107,12 @@
               </div>
             </div>
           </div>
+        </div>
 
-          <p class="summary" id="bio">
-            中国海洋大学 · 计算机科学&人工智能
-          </p>
+        <p class="summary" id="bio">中国海洋大学 · 计算机科学&人工智能</p>
 
-          <div class="stats-bar" aria-label="数据概览">
+        <div class="stats-bar" data-physical-glass data-glass-preset="bar" aria-label="数据概览">
+          <div class="physical-glass__content stats-bar-inner">
             <div class="stat-item">
               <p class="stat-num" id="stat-repos">5</p>
               <p class="stat-label" data-i18n="stat_repos">公开仓库</p>
@@ -176,32 +126,39 @@
               <p class="stat-label" data-i18n="stat_lang">主要语言</p>
             </div>
           </div>
+        </div>
 
-          <h3 class="subsection-title" data-i18n="focus_title">专注领域</h3>
+        <div class="about-block" id="about-focus">
+          <h2 class="block-title">
+            <span class="section-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </span>
+            <span data-i18n="focus_title">专注领域</span>
+          </h2>
           <div class="content-grid" id="focus-grid">
             <article class="card content-card">
               <div class="card-icon" aria-hidden="true">🧠</div>
-              <h4 class="content-card-title" data-i18n="focus_ai_title">计算机科学&人工智能</h4>
+              <h3 class="content-card-title" data-i18n="focus_ai_title">计算机科学&人工智能</h3>
               <p class="card-tech" data-i18n="focus_ai_tech">AI Agent · 机器学习</p>
               <p class="card-desc" data-i18n="focus_ai_desc">探索 AI Agent 与智能决策系统，将机器学习应用于实际场景。</p>
             </article>
             <article class="card content-card">
               <div class="card-icon" aria-hidden="true">🐍</div>
-              <h4 class="content-card-title" data-i18n="focus_py_title">Python 开发</h4>
+              <h3 class="content-card-title" data-i18n="focus_py_title">Python 开发</h3>
               <p class="card-tech" data-i18n="focus_py_tech">数据分析 · 自动化</p>
               <p class="card-desc" data-i18n="focus_py_desc">以 Python 为核心工具链，进行数据分析、自动化与后端开发。</p>
             </article>
             <article class="card content-card">
               <div class="card-icon" aria-hidden="true">📈</div>
-              <h4 class="content-card-title" data-i18n="focus_quant_title">量化投资 Agent</h4>
+              <h3 class="content-card-title" data-i18n="focus_quant_title">量化投资 Agent</h3>
               <p class="card-tech" data-i18n="focus_quant_tech">A 股 · 智能投顾</p>
               <p class="card-desc" data-i18n="focus_quant_desc">结合 A 股市场与 AI Agent，构建智能投资辅助工具。</p>
             </article>
           </div>
-        </section>
+        </div>
 
-        <section class="section reveal visible" id="skills">
-          <h2 class="section-title">
+        <div class="about-block" id="skills" data-section="skills">
+          <h2 class="block-title">
             <span class="section-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
             </span>
@@ -237,10 +194,10 @@
             <span class="tag tag-finance">Quantitative</span>
             <span class="tag tag-general">Open Source</span>
           </div>
-        </section>
+        </div>
 
-        <section class="section reveal visible" id="projects">
-          <h2 class="section-title">
+        <div class="about-block" id="projects" data-section="projects">
+          <h2 class="block-title">
             <span class="section-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
             </span>
@@ -269,10 +226,10 @@
               <a class="card-link" href="https://github.com/DominicDin/teest" target="_blank" rel="noopener noreferrer" data-i18n="view_github">查看 GitHub →</a>
             </article>
           </div>
-        </section>
+        </div>
 
-        <section class="section reveal visible" id="contact">
-          <h2 class="section-title">
+        <div class="about-block" id="contact" data-section="contact">
+          <h2 class="block-title">
             <span class="section-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5L4 8V6l8 5 8-5v2z"/></svg>
             </span>
@@ -285,18 +242,19 @@
               <span data-i18n="visit_github">访问 GitHub 主页</span>
             </a>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
+    </main>
 
-      <footer class="footer">
-        <p>© <span id="year"></span> <span id="footer-name">DominicDin</span></p>
-      </footer>
-    </div>
+    <footer class="footer">
+      <p>© <span id="year"></span> <span id="footer-name">DominicDin</span></p>
+    </footer>
   </div>
 
   <script>
     document.querySelectorAll(".reveal").forEach((el) => el.classList.add("visible"));
   </script>
-  <script src="main.js?v=9"></script>
+  <script type="module" src="glass-home.js?v=21"></script>
+  <script src="main.js?v=21"></script>
 </body>
 </html>

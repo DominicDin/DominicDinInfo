@@ -58,6 +58,15 @@ const I18N = {
     nav_skills: "技能",
     nav_projects: "项目",
     nav_contact: "联系",
+    nav_about_hint: "个人简介、研究方向与开源经历",
+    nav_skills_hint: "Python、AI 与数据分析工具链",
+    nav_projects_hint: "GitHub 开源仓库与实验作品",
+    nav_contact_hint: "欢迎通过 GitHub 交流合作",
+    dd_about_bio: "个人简介",
+    dd_about_focus: "专注领域",
+    dd_skills_stack: "技能栈",
+    dd_projects_all: "精选项目",
+    dd_contact_me: "联系我",
     theme_toggle: "切换主题",
     menu_open: "打开菜单",
     section_about: "关于我",
@@ -111,6 +120,15 @@ const I18N = {
     nav_skills: "Skills",
     nav_projects: "Projects",
     nav_contact: "Contact",
+    nav_about_hint: "Bio, research focus, and open-source journey",
+    nav_skills_hint: "Python, AI, and data-analysis toolchain",
+    nav_projects_hint: "GitHub repos and experimental work",
+    nav_contact_hint: "Reach out for collaboration on GitHub",
+    dd_about_bio: "Bio",
+    dd_about_focus: "Focus areas",
+    dd_skills_stack: "Tech stack",
+    dd_projects_all: "Featured projects",
+    dd_contact_me: "Get in touch",
     theme_toggle: "Toggle theme",
     menu_open: "Open menu",
     section_about: "About Me",
@@ -178,7 +196,7 @@ const REPO_DESC_I18N = {
   },
 };
 
-let currentLang = storageGet("lang") || (navigator.language.toLowerCase().startsWith("zh") ? "zh" : "en");
+let currentLang = storageGet("lang") || "en";
 let lastProfile = PROFILE_FALLBACK;
 let lastRepos = REPOS_FALLBACK;
 
@@ -192,29 +210,33 @@ function setLang(lang) {
   storageSet("lang", lang);
   document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
 
-  document.querySelectorAll("[data-i18n]").forEach((el) => {
-    const key = el.dataset.i18n;
-    if (I18N[lang][key]) el.textContent = I18N[lang][key];
+  requestAnimationFrame(() => {
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      const key = el.dataset.i18n;
+      if (I18N[lang][key]) el.textContent = I18N[lang][key];
+    });
+
+    document.querySelectorAll("[data-i18n-aria]").forEach((el) => {
+      const key = el.dataset.i18nAria;
+      if (I18N[lang][key]) el.setAttribute("aria-label", I18N[lang][key]);
+    });
+
+    const meta = document.getElementById("meta-description");
+    if (meta) meta.setAttribute("content", t("meta_description"));
+
+    const langLabel = document.getElementById("lang-label");
+    if (langLabel) langLabel.textContent = t("lang_label");
+
+    document.querySelectorAll(".lang-btn[data-lang]").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.lang === lang);
+      btn.setAttribute("aria-pressed", String(btn.dataset.lang === lang));
+    });
+
+    document.documentElement.setAttribute("data-lang-active", lang);
+
+    applyProfile(lastProfile);
+    if (lastRepos.length) renderProjects(lastRepos);
   });
-
-  document.querySelectorAll("[data-i18n-aria]").forEach((el) => {
-    const key = el.dataset.i18nAria;
-    if (I18N[lang][key]) el.setAttribute("aria-label", I18N[lang][key]);
-  });
-
-  const meta = document.getElementById("meta-description");
-  if (meta) meta.setAttribute("content", t("meta_description"));
-
-  const langLabel = document.getElementById("lang-label");
-  if (langLabel) langLabel.textContent = t("lang_label");
-
-  document.querySelectorAll(".lang-btn[data-lang]").forEach((btn) => {
-    btn.classList.toggle("active", btn.dataset.lang === lang);
-    btn.setAttribute("aria-pressed", String(btn.dataset.lang === lang));
-  });
-
-  applyProfile(lastProfile);
-  if (lastRepos.length) renderProjects(lastRepos);
 }
 
 function initLang() {
@@ -222,7 +244,10 @@ function initLang() {
 }
 
 document.querySelectorAll(".lang-btn[data-lang]").forEach((btn) => {
-  btn.addEventListener("click", () => setLang(btn.dataset.lang));
+  btn.addEventListener("click", () => {
+    setLang(btn.dataset.lang);
+    closeHoverDropdowns();
+  });
 });
 
 try {
@@ -236,6 +261,26 @@ try {
 const html = document.documentElement;
 const themeToggle = document.getElementById("theme-toggle");
 const storedTheme = storageGet("theme");
+
+function prefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function debounce(fn, wait = 120) {
+  let timer = 0;
+  return (...args) => {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => fn(...args), wait);
+  };
+}
+
+function withThemeTransition(run) {
+  run();
+  syncThemeIcons();
+  if (prefersReducedMotion()) return;
+  html.classList.add("theme-switching");
+  window.setTimeout(() => html.classList.remove("theme-switching"), 360);
+}
 
 if (storedTheme) {
   html.setAttribute("data-theme", storedTheme);
@@ -253,9 +298,10 @@ themeToggle?.addEventListener("click", () => {
     next = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "dark";
   }
 
-  html.setAttribute("data-theme", next);
-  storageSet("theme", next);
-  syncThemeIcons();
+  withThemeTransition(() => {
+    html.setAttribute("data-theme", next);
+    storageSet("theme", next);
+  });
 });
 
 function syncThemeIcons() {
@@ -275,52 +321,68 @@ function syncThemeIcons() {
   active?.classList.add("is-active");
 }
 
-/* ── Mobile sidebar ── */
+/* ── Hover dropdown nav (menu + language) ── */
 
-const DESKTOP_BREAKPOINT = 1024;
+const MOBILE_BREAKPOINT = 768;
 
-const sidebar = document.getElementById("sidebar");
+const menuDropdown = document.getElementById("menu-dropdown");
+const langDropdown = document.getElementById("lang-dropdown");
 const menuBtn = document.getElementById("menu-btn");
-const overlay = document.getElementById("sidebar-overlay");
+const langTrigger = document.getElementById("lang-trigger");
+const mobileOverlay = document.getElementById("mobile-overlay");
 
-function isMobileSidebar() {
-  return window.innerWidth < DESKTOP_BREAKPOINT;
+function isMobileNav() {
+  return window.innerWidth < MOBILE_BREAKPOINT;
 }
 
-function closeSidebar() {
-  sidebar?.classList.remove("open");
-  overlay?.classList.remove("visible");
-  overlay?.setAttribute("hidden", "");
+function closeHoverDropdowns() {
+  menuDropdown?.classList.remove("is-open");
+  langDropdown?.classList.remove("is-open");
   menuBtn?.setAttribute("aria-expanded", "false");
-  document.body.classList.remove("sidebar-open");
+  langTrigger?.setAttribute("aria-expanded", "false");
+  mobileOverlay?.classList.remove("visible");
+  mobileOverlay?.setAttribute("hidden", "");
+  document.body.classList.remove("nav-open");
 }
 
-function openSidebar() {
-  if (!isMobileSidebar()) return;
-  sidebar?.classList.add("open");
-  overlay?.removeAttribute("hidden");
-  overlay?.classList.add("visible");
-  menuBtn?.setAttribute("aria-expanded", "true");
-  document.body.classList.add("sidebar-open");
-}
-
-function syncSidebarForViewport() {
-  if (!isMobileSidebar()) {
-    closeSidebar();
+function toggleDropdown(dropdown, trigger) {
+  if (!dropdown || !trigger) return;
+  const willOpen = !dropdown.classList.contains("is-open");
+  closeHoverDropdowns();
+  if (willOpen) {
+    dropdown.classList.add("is-open");
+    trigger.setAttribute("aria-expanded", "true");
+    if (dropdown === menuDropdown) {
+      mobileOverlay?.removeAttribute("hidden");
+      mobileOverlay?.classList.add("visible");
+      document.body.classList.add("nav-open");
+    }
   }
 }
 
-menuBtn?.addEventListener("click", () => {
-  if (sidebar?.classList.contains("open")) {
-    closeSidebar();
-  } else {
-    openSidebar();
-  }
+menuBtn?.addEventListener("click", (event) => {
+  if (!isMobileNav()) return;
+  event.stopPropagation();
+  toggleDropdown(menuDropdown, menuBtn);
 });
 
-overlay?.addEventListener("click", closeSidebar);
-window.addEventListener("resize", syncSidebarForViewport);
-syncSidebarForViewport();
+langTrigger?.addEventListener("click", (event) => {
+  if (!isMobileNav()) return;
+  event.stopPropagation();
+  toggleDropdown(langDropdown, langTrigger);
+});
+
+mobileOverlay?.addEventListener("click", closeHoverDropdowns);
+
+document.addEventListener("click", (event) => {
+  if (!isMobileNav()) return;
+  if (menuDropdown?.contains(event.target) || langDropdown?.contains(event.target)) return;
+  closeHoverDropdowns();
+});
+
+window.addEventListener("resize", debounce(() => {
+  if (!isMobileNav()) closeHoverDropdowns();
+}, 120));
 
 window.addEventListener("load", () => {
   syncThemeIcons();
@@ -332,31 +394,40 @@ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () 
   }
 });
 
-/* ── Contacts toggle (mobile) ── */
-
-const contactsToggle = document.getElementById("contacts-toggle");
-const contactList = document.getElementById("contact-list");
-
-contactsToggle?.addEventListener("click", () => {
-  const expanded = contactsToggle.getAttribute("aria-expanded") === "true";
-  contactsToggle.setAttribute("aria-expanded", String(!expanded));
-  contactList?.classList.toggle("open");
-});
+/* ── Contacts toggle (mobile) — removed with sidebar layout ── */
 
 /* ── Nav active state ── */
 
-const navLinks = document.querySelectorAll(".nav-link");
-const sections = document.querySelectorAll(".section");
+const navLinks = document.querySelectorAll(".hover-dropdown-menu .nav-link[data-section]");
+const sections = Array.from(document.querySelectorAll("[data-section]"));
 let navPickLock = false;
 let navPickLockTimer = 0;
+let activeSectionId = "";
+let scrollRaf = 0;
+const NAV_OFFSET = 80;
 
 function setActiveSection(sectionId) {
+  if (!sectionId || activeSectionId === sectionId) return;
+  activeSectionId = sectionId;
   navLinks.forEach((link) => {
-    link.classList.toggle("active", link.dataset.section === sectionId);
+    const isActive = link.dataset.section === sectionId;
+    if (link.classList.contains("active") !== isActive) {
+      link.classList.toggle("active", isActive);
+    }
   });
 }
 
-function lockNavPick(ms = 900) {
+function scrollToSection(sectionId) {
+  const target = document.getElementById(sectionId);
+  if (!target) return;
+  const top = target.getBoundingClientRect().top + window.scrollY - NAV_OFFSET;
+  window.scrollTo({
+    top: Math.max(0, top),
+    behavior: prefersReducedMotion() ? "auto" : "smooth",
+  });
+}
+
+function lockNavPick(ms = 1000) {
   navPickLock = true;
   window.clearTimeout(navPickLockTimer);
   navPickLockTimer = window.setTimeout(() => {
@@ -368,36 +439,49 @@ function lockNavPick(ms = 900) {
 function updateActiveNav() {
   if (!sections.length || navPickLock) return;
 
-  const triggerLine = 112;
-  let activeId = sections[0].id;
+  const triggerLine = NAV_OFFSET + 32;
+  let nextId = sections[0].id;
 
   sections.forEach((section) => {
     if (section.getBoundingClientRect().top <= triggerLine) {
-      activeId = section.id;
+      nextId = section.id;
     }
   });
 
   const lastSection = sections[sections.length - 1];
   const lastRect = lastSection.getBoundingClientRect();
   if (lastRect.top <= window.innerHeight * 0.55 && lastRect.bottom > triggerLine) {
-    activeId = lastSection.id;
+    nextId = lastSection.id;
   }
 
-  setActiveSection(activeId);
+  setActiveSection(nextId);
 }
 
-window.addEventListener("scroll", updateActiveNav, { passive: true });
-window.addEventListener("resize", updateActiveNav);
+function onScroll() {
+  if (navPickLock) return;
+  window.cancelAnimationFrame(scrollRaf);
+  scrollRaf = window.requestAnimationFrame(updateActiveNav);
+}
+
+window.addEventListener("scroll", onScroll, { passive: true });
+window.addEventListener("resize", debounce(updateActiveNav, 100));
 updateActiveNav();
 
 navLinks.forEach((link) => {
-  link.addEventListener("click", () => {
+  link.addEventListener("click", (event) => {
     const id = link.dataset.section;
-    if (id) {
-      setActiveSection(id);
-      lockNavPick();
+    const href = link.getAttribute("href") || "";
+    if (!id || !href.startsWith("#")) return;
+    event.preventDefault();
+    setActiveSection(id);
+    lockNavPick();
+    scrollToSection(href.replace("#", ""));
+    if (history.replaceState) {
+      history.replaceState(null, "", href);
+    } else {
+      location.hash = href;
     }
-    if (isMobileSidebar()) closeSidebar();
+    closeHoverDropdowns();
   });
 });
 
@@ -414,6 +498,7 @@ window.addEventListener("hashchange", () => {
   if (id && document.getElementById(id)) {
     setActiveSection(id);
     lockNavPick();
+    scrollToSection(id);
   }
 });
 
@@ -451,8 +536,6 @@ function yearsSince(dateStr) {
 function applyProfile(profile) {
   lastProfile = profile;
   const displayName = profile.name || profile.login;
-  const displayNameEl = document.getElementById("display-name");
-  if (displayNameEl) displayNameEl.textContent = displayName;
   const footerName = document.getElementById("footer-name");
   if (footerName) footerName.textContent = displayName;
   document.title = t("page_title").replace("DominicDin", displayName);
@@ -470,29 +553,21 @@ function applyProfile(profile) {
 
   const avatarUrl = profile.avatar_url;
   if (avatarUrl) {
-    const avatar = document.getElementById("avatar");
-    if (avatar) avatar.src = avatarUrl;
     const aboutAvatar = document.getElementById("about-avatar");
     if (aboutAvatar) aboutAvatar.src = avatarUrl;
   }
 
   if (profile.location) {
-    const locationEl = document.getElementById("location");
-    if (locationEl) locationEl.textContent = profile.location;
     const aboutLocation = document.getElementById("about-location");
     if (aboutLocation) aboutLocation.textContent = profile.location;
   }
 
   if (profile.public_repos != null) {
-    const repoCount = document.getElementById("repo-count");
-    if (repoCount) repoCount.textContent = profile.public_repos;
     const statRepos = document.getElementById("stat-repos");
     if (statRepos) statRepos.textContent = profile.public_repos;
   }
 
   if (profile.created_at) {
-    const joined = document.getElementById("joined");
-    if (joined) joined.textContent = formatJoined(profile.created_at);
     document.getElementById("stat-years").textContent = yearsSince(profile.created_at);
   }
 
@@ -506,14 +581,6 @@ function applyProfile(profile) {
         ? t("school_name")
         : profile.company || t("school_name");
     tagline.textContent = `${school} · ${t("tagline_suffix")}`;
-  }
-
-  const role = document.getElementById("role");
-  if (role) {
-    role.textContent =
-      currentLang === "zh"
-        ? t("bio_text")
-        : profile.bio || t("bio_text");
   }
 }
 
@@ -533,6 +600,33 @@ function projectIcon(repo) {
   if (lang.includes("java")) return PROJECT_ICONS.java;
   if (lang.includes("jupyter")) return PROJECT_ICONS.jupyter;
   return PROJECT_ICONS.default;
+}
+
+function renderNavProjects(repos) {
+  const menu = document.getElementById("nav-dd-projects");
+  if (!menu || !repos.length) return;
+
+  const items = repos.slice(0, 5).map((repo) => {
+    return `<li><a href="${repo.html_url}" target="_blank" rel="noopener noreferrer">${repo.name}</a></li>`;
+  });
+
+  menu.innerHTML = `
+    <li><a href="#projects" data-section="projects" data-i18n="dd_projects_all">${t("dd_projects_all")}</a></li>
+    ${items.join("")}
+  `;
+
+  menu.querySelectorAll("a[data-section]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      const id = link.dataset.section;
+      if (!id) return;
+      event.preventDefault();
+      setActiveSection(id);
+      lockNavPick();
+      scrollToSection(id);
+      if (history.replaceState) history.replaceState(null, "", `#${id}`);
+      closeHoverDropdowns();
+    });
+  });
 }
 
 function renderProjects(repos) {
@@ -563,6 +657,8 @@ function renderProjects(repos) {
       `;
     })
     .join("");
+
+  renderNavProjects(repos);
 }
 
 async function fetchGitHubData() {
